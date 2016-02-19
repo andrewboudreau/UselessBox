@@ -8,8 +8,8 @@ int closedPos = 175;    // variable to store the servo position
 int openPos = 70;
 bool boxOpen = false;
 
-int fingerOutPos = 180;
-int fingerInPos = 100;
+int fingerOutPos = 170;
+int fingerInPos = 89;
 
 Servo servo_finger;
 bool fingerExtended = false;
@@ -22,6 +22,12 @@ void setup() {
   pinMode(switchPin, INPUT_PULLUP);
   servo.attach(servoPin);
   servo_finger.attach(servoFingerPin);
+  Serial.begin(9600); 
+
+  
+    start = false;
+    setBoxLid(false);
+    setFingerExtended(false);
 }
 
 bool buttonPressed() {
@@ -70,14 +76,12 @@ void toggleFinger() {
   setFingerExtended(fingerExtended);
 }
 
-void loop() {
-  if(start) {
-    start = false;
-    setBoxLid(false);
-    setFingerExtended(false);
-  }
+void debugLoop(){
+  Serial.println("");
 
-  if(buttonPressed()){
+ Serial.print("stage");
+ Serial.println(stage, DEC); 
+ if(buttonPressed()){
     stage = stage + 1;
     if(stage == 1) {
       setBoxLid(false);
@@ -98,6 +102,27 @@ void loop() {
       stage = 1;
       return;
     }
-    
+  }
+}
+
+void loop() {
+  if(buttonPressed()){
+    stage = stage + 1;
+    if(stage == 1) {
+      setBoxLid(false);
+      setFingerExtended(false);
+      return;
+    }
+    else if(stage == 2){
+      setBoxLid(true);
+      setFingerExtended(true);
+      return;
+    }
+    else if(stage == 3){
+      setFingerExtended(false);
+      setBoxLid(false);
+      stage = 1;
+      return;
+    }
   }
 }
