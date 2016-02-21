@@ -16,6 +16,7 @@ bool fingerExtended = false;
 bool lastRead = false;
 bool start = true;
 int stage = 0;
+int pos = 0;
 Servo servo;
 
 void setup() {
@@ -24,10 +25,9 @@ void setup() {
   servo_finger.attach(servoFingerPin);
   Serial.begin(9600); 
 
-  
-    start = false;
-    setBoxLid(false);
-    setFingerExtended(false);
+  start = false;
+  setBoxLid(false);
+  setFingerExtended(false);
 }
 
 bool buttonPressed() {
@@ -58,8 +58,9 @@ void setBoxLid(bool isBoxOpen) {
 
 void setFingerExtended(bool isExtended){
   fingerExtended = isExtended;
-  if(fingerExtended)
+  if(fingerExtended){
     servo_finger.write(fingerOutPos);
+  }
   else
     servo_finger.write(fingerInPos);
 
@@ -77,10 +78,7 @@ void toggleFinger() {
 }
 
 void debugLoop(){
-  Serial.println("");
-
- Serial.print("stage");
- Serial.println(stage, DEC); 
+ 
  if(buttonPressed()){
     stage = stage + 1;
     if(stage == 1) {
@@ -106,6 +104,11 @@ void debugLoop(){
 }
 
 void loop() {
+  
+ Serial.print("digitalRead(switchPin)  ");
+ Serial.println(digitalRead(switchPin), DEC); 
+ //return;
+  
   if(buttonPressed()){
     stage = stage + 1;
     if(stage == 1) {
@@ -116,6 +119,10 @@ void loop() {
     else if(stage == 2){
       setBoxLid(true);
       setFingerExtended(true);
+      
+      setFingerExtended(false);
+      setBoxLid(false);
+      stage = 1;
       return;
     }
     else if(stage == 3){
